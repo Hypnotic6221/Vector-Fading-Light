@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Vector: Fading Light</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(120deg, #232526 0%, #414345 100%);
+        font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+        color: #e0e0e0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      h1 {
+        margin-top: 3vh;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-shadow: 0 2px 8px #000a;
+        color: #f8f8f8;
+      }
+      .canvas-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 80vh;
+      }
+      #game-canvas {
+        background: #181a1b;
+        border-radius: 16px;
+        box-shadow: 0 4px 32px #0008;
+        margin: 0 auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Vector: Fading Light</h1>
+    <div id="canvas-container">
+      <div style="position: relative; display: inline-block">
+        <canvas
+          id="game-canvas"
+          style="padding: 0; margin: auto; display: block; width: auto"
+        ></canvas>
+        <div
+          id="gameOver"
+          style="
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Changa One', cursive;
+            font-size: 124px;
+            color: white;
+            -webkit-text-stroke: 5px black;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+              height: 100%;
+            "
+          >
+            <span id="game-over-text">GAME OVER</span>
+            <button
+              id="restart-game-button"
+              style="
+                font-family: 'Changa One', cursive;
+                border: none;
+                outline: none;
+                font-size: 60px;
+                padding: 15px;
+                border-radius: 30px;
+              "
+              onclick="restartGame()"
+            >
+              Restart
+            </button>
+          </div>
+        </div>
+        <div
+          style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500px;
+            height: 150px;
+            border-radius: 16px;
+            background: linear-gradient(
+              to right bottom,
+              rgba(0, 0, 0, 0.9),
+              rgba(0, 0, 0, 0),
+              rgba(0, 0, 0, 0)
+            );
+          "
+        ></div>
+        <div
+          style="
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            font-size: 28px;
+            color: white;
+            -webkit-text-stroke: 0.5px black;
+            display: flex;
+            align-items: center;
+          "
+        >
+          <!-- stats -->
+          <div style="display: flex; align-items: left; flex-direction: column">
+            <div id="speedLevel">(1) Speed (Lvl 1 - Cost 5)</div>
+            <div id="damageLevel">(2) Damage (Lvl 1 - Cost 5)</div>
+            <div id="healthLevel">(3) Health (Lvl 1 - Cost 5)</div>
+          </div>
+        </div>
+        <div
+          style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 150px;
+            border-radius: 16px;
+            background: linear-gradient(
+              to left bottom,
+              rgba(0, 0, 0, 0.9),
+              rgba(0, 0, 0, 0),
+              rgba(0, 0, 0, 0)
+            );
+          "
+        ></div>
+        <div
+          style="
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 40px;
+            color: white;
+            -webkit-text-stroke: 1px black;
+            display: flex;
+            align-items: center;
+          "
+        >
+          <!-- health -->
+          <div style="display: flex; align-items: center; margin-right: 30px">
+            <svg
+              style="width: 50px; color: red; margin-right: 5px"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1
+          3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+              />
+            </svg>
+            <div id="health">100</div>
+          </div>
+          <!-- datafragments -->
+          <div style="display: flex; align-items: center">
+            <svg
+              style="
+                width: 50px;
+                color: yellowgreen;
+                margin-right: 5px;
+                margin-top: 5px;
+              "
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="size-6"
+            >
+              <path d="M16.5 7.5h-9v9h9v-9Z" />
+              <path
+                fill-rule="evenodd"
+                d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div id="datafragments">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/classes/Building.js"></script>
+    <script src="js/classes/Projectile.js"></script>
+    <script src="js/classes/drones/Drone.js"></script>
+    <script src="js/classes/drones/PlayerDrone.js"></script>
+    <script src="js/classes/drones/NpcEnemyDrone.js"></script>
+    <script src="js/classes/drones/NpcFriendlyDrone.js"></script>
+    <script src="js/classes/DataFragment.js"></script>
+    <script src="js/assets/upgradeConfig.js"></script>
+    <script src="js/assets/buildingsData.js"></script>
+    <script src="js/assets/playerSpawnpointsData.js"></script>
+    <script src="js/assets/enemyNpcSpawnpointsData.js"></script>
+    <script src="js/assets/friendlyNpcSpawnpointsData.js"></script>
+    <script src="js/assets/datafragmentSpawnpointsData.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
